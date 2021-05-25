@@ -25,18 +25,7 @@ namespace TestUserInterface
 
         // CheckUserDataBase
         // This here is what we call when we want to check info in the database. 
-        public int CheckUserDataBase(string InputData, int checks)
-        {
-            int exist = -1;
-
-            switch (checks) // checks will have an int that user inputs when called. 
-            {
-                case 1: exist = NewUser.FindIndex(ent => ent.UserEmail == InputData); break; // if 1, check if emails match
-                case 2: exist = NewUser.FindIndex(ent => ent.UserPassword == InputData); break; // if 2, check if passowrds match
-            }      
-            return exist; // return the number of where there matche... aka the usuer number 
-        }
-
+       
 
 
 

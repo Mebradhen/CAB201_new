@@ -10,16 +10,11 @@ namespace TestUserInterface
         // public scope object hold vars 
         Menu Menu;
         Menu SubMenu;
-
         List<User> Users;
 
         //This Global Score int, is how we check if someone is logged in or not 
         int CurrentloggedInUser = -2;
 
-        // A simple string var we throw console messages into
-        string Message_text = "";
-
-       
 
         // In TestUserInterface we create the objects we need for this menu. 
         public TestUserInterface()
@@ -34,24 +29,16 @@ namespace TestUserInterface
     ///                   
     ///                             AddCustomer is where we add a new Customer too the User DataBase.
     /// </summary> ******************************************************************************************************************
-    private void AddCustomer()
+    
+    private void Register()
         {
-            // Use GetInput too get all the information we need add a new user. 
-
             var CustomerName = UserInterface.GetInput("Full name");
             var CustomerEmail = UserInterface.GetInput("Email");
             var Customerpassword = UserInterface.GetPassword("Password");
 
-            // we send off the Customer Email too the CheckUserDataBase function, as too see if the email is new or old.
-            // Returns an Int of current users position in database. Otherwise = -1; 
+            int CheckEmail = Users.FindIndex(ent => ent.Email == CustomerEmail);
 
-            // int CheckEmail = Customer.CheckUserDataBase(CustomerEmail,1);
-
-            int CheckEmail = 1;
-
-            // CheckFor for a checker function, it can be customised too search for anything in a string in the second input.
             // Here we are checking if the Email has a legit @ in it. 
-
             bool @Check = DataCalculation.CheckFor(CustomerEmail, "@");
 
             //if We have an @
@@ -61,17 +48,17 @@ namespace TestUserInterface
                 if (CheckEmail == -1)
                 {
                     //then simply add the new user too the Database object. 
-                    Users.Add(CustomerName, CustomerEmail, Customerpassword);
-                    Message_text = "System - " + CustomerName + " registered successfully";
+                    Users.Add(new User() { Name = CustomerName, Email = CustomerEmail, Password = Customerpassword });
+                    UserInterface.Message("System - " + CustomerName + " registered successfully");
                 }
                 else // otherwise throw an error 
                 {
-                    Message_text = "System - User is already registered";
+                    UserInterface.Error("User is already registered");
                 }
             }
             else // otherwise throw an error 
             {
-                Message_text = "System - Email is missing an @";
+                UserInterface.Error("Email is missing an @");
             }
         }
 
@@ -81,26 +68,26 @@ namespace TestUserInterface
         ///                                      LoginCustomer is where we login a user
         /// </summary> ******************************************************************************************************************
 
-        private void LoginCustomer()
+        private void Login()
         {
             //one again we use GetInput too get an input for email and password. 
             string TestEmail = UserInterface.GetInput("Email");
             string TestPassword = UserInterface.GetPassword("Password");
 
             //Cross checking the input data with the user data base, output is the user data's position 
-            int CheckEmail = Customer.CheckUserDataBase(TestEmail,1);
-            int CheckPassword = Customer.CheckUserDataBase(TestPassword,2);
+            int CheckEmail =  Users.FindIndex(ent => ent.Email == TestEmail);
+            int CheckPassword = Users.FindIndex(ent => ent.Password == TestPassword);
 
             // if email exits and password exits
             if (CheckEmail > -1 && CheckPassword > -1) // then login the user 
             {
                 CurrentloggedInUser = CheckEmail;
-            
-                Message_text = "System - Welcome " + Customer.NewUser[CurrentloggedInUser].UserName + " (" + Customer.NewUser[CurrentloggedInUser].UserEmail + ") ";
+
+                UserInterface.Message("System - Welcome " + Users[CurrentloggedInUser].Name + " (" + Users[CurrentloggedInUser].Email + ") ");
             }
             else // otherwise, throw and error 
             {
-                Message_text = "System - Error Try Email or Password again";
+                UserInterface.Error("Email or Password wrong");
             }
         }
 
@@ -110,57 +97,44 @@ namespace TestUserInterface
         ///            NewLandRegister and NewHouseRegister is where we add a house or Land too the house database 
         /// </summary> ******************************************************************************************************************
 
-        public void NewLandRegister()
-        {
-            // Again use GetInput to get the Address, Postcode and area for a new property  
 
+        public void RegisterLand()
+        {
+   
             string House_Address = UserInterface.GetInput("Address");
             string House_Postcode = UserInterface.GetInput("Postcode");
             string House_Area = UserInterface.GetInput("Area");
 
             // call the RegisterHouseArea and input the above strings, Set the forth input too 0
-            RegisterHouseArea(House_Address, House_Postcode, House_Area, 0);
-        }
+            bool isNew = DataCalculation.CheckIFNew(Users[CurrentloggedInUser].Properties, House_Address, House_Postcode);
+            
+            if(isNew == true)
+            {
 
-        public void NewHouseRegister()
+                UserInterface.Message("System - Land at " + House_Address + ", " + House_Postcode + " " + House_Area + "m² Registered successfully");
+
+                Users[CurrentloggedInUser].Properties.Add(new Land() { Address = House_Address, Postcode = House_Postcode, Area = House_Area});
+            }
+
+        }
+        public void RegisterHouse()
         {
-            // Again use GetInput to get the Address, Postcode and House_desc for a new property  
 
             string House_Address = UserInterface.GetInput("Address");
             string House_Postcode = UserInterface.GetInput("Postcode");
             string House_desc = UserInterface.GetInput("Enter description of house (list of rooms etc)");
 
             // call the RegisterHouseArea and input the above strings Set the forth input too 1
-            RegisterHouseArea(House_Address, House_Postcode, House_desc, 1);
-        }
+            bool isNew = DataCalculation.CheckIFNew(Users[CurrentloggedInUser].Properties, House_Address, House_Postcode);
 
-        // RegisterHouseArea helps to reduce duplicate code, given both use this code. 
-        public void RegisterHouseArea(string HAddress, string HPostcode, string HInfo , int HType )
-        {
-            // Here we use CheckPropertyDataBase too check if the house is new or already for sale;
-            int Checkhouse = Customer.NewUser[CurrentloggedInUser].CheckPropertyDataBase(HAddress);
-
-            // We then use CheckLength again too see how long the HPostcode var is.
-            bool CheckPostcode = DataCalculation.CheckLength(HPostcode, 4);
-
-            if (CheckPostcode == true) // IF Postcode is not over 4
+            if (isNew == true)
             {
-                if (Checkhouse == -1) // house is new 
-                {
-                    // then add Property too Users House objects DataBase
-                    Customer.NewUser[CurrentloggedInUser].AddProperty(HAddress, HPostcode, HInfo, HType);
-                    Message_text = "System - " + HAddress + ", " + HPostcode + " " + HInfo + " Registered successfully";
-                }
-                else // Throw error 
-                {
-                    Message_text = "System - ERROR: Property is already Registered";
-                }
+                UserInterface.Message("System - House at " + House_Address + ", " + House_Postcode + " " + House_desc + " Registered successfully");
+
+                Users[CurrentloggedInUser].Properties.Add(new House() { Address = House_Address, Postcode = House_Postcode, Info = House_desc });
             }
-            else // Throw error 
-            {
-                Message_text = "System - ERROR: PostCode is not 4 characters long ";
-            }
-        }
+           
+        }  
 
         /// <summary> ******************************************************************************************************************
         ///                 OPTION 3 -           ListProperties                    ListProperties 
@@ -170,11 +144,10 @@ namespace TestUserInterface
 
         public void ListProperties()
         {
-            Message_text = ""; // just stops Message_text printing anything here 
-
             // call DisplayList, and get it too list Customers Property;
-            UserInterface.DisplayList("Your Current Properties For Sale", Customer.NewUser[CurrentloggedInUser].NewProperty);
+            UserInterface.DisplayList("Your Current Properties For Sale", Users[CurrentloggedInUser].Properties);
         }
+     
 
         /// <summary> ******************************************************************************************************************
         ///                 OPTION 4 -           List bids                    List bids 
@@ -184,12 +157,13 @@ namespace TestUserInterface
         public void ListBids() 
         {
             //call ChooseFromList, where we list all houses the user owns.
-            int HouseNum = UserInterface.ChooseFromList(Customer.NewUser[CurrentloggedInUser].NewProperty);
+            int HouseNum = UserInterface.ChooseFromList(Users[CurrentloggedInUser].Properties);
 
             // use HouseNum too list all the current bids for that Property;
-            UserInterface.DisplayList("Bids received: ", Customer.NewUser[CurrentloggedInUser].NewProperty[HouseNum].NewBid);
-            
+            UserInterface.DisplayList("Bids received: ", Users[CurrentloggedInUser].Properties[HouseNum].Bids);
+
         }
+
 
         /// <summary> ******************************************************************************************************************
         ///                 OPTION 5 -           Sell to highest                  Sell too Highest
@@ -197,102 +171,102 @@ namespace TestUserInterface
         ///                        SellHouse is where we sell a house too the highest bidder 
         /// </summary> ******************************************************************************************************************
 
+        /*
         public void SellHouse() 
         {
-            //call ChooseFromList, where we list all houses the user owns.
-            int HouseNum = UserInterface.ChooseFromList(Customer.NewUser[CurrentloggedInUser].NewProperty);
+        //call ChooseFromList, where we list all houses the user owns.
+        int HouseNum = UserInterface.ChooseFromList(Customer.NewUser[CurrentloggedInUser].NewProperty);
 
-            //UserHold holes the Userinfo class, just too keep the code a bit cleaner
-            NewUserRegister.UserInfo UserHold = Customer.NewUser[CurrentloggedInUser];
+        //UserHold holes the Userinfo class, just too keep the code a bit cleaner
+        NewUserRegister.UserInfo UserHold = Customer.NewUser[CurrentloggedInUser];
 
-            //Here we call HighestBid, HighestBid will order the Bidlist in ascending order
-            DataCalculation.HighestBid(UserHold.NewProperty[HouseNum].NewBid);
+        //Here we call HighestBid, HighestBid will order the Bidlist in ascending order
+        DataCalculation.HighestBid(UserHold.NewProperty[HouseNum].NewBid);
 
-            //we grab the first entry in the Bid Database, now that it's in order, This will be the biggest BID.
-            //WINNERBID_NUM gets the user number 
-            int WINNERBID_NUM = UserHold.NewProperty[HouseNum].NewBid[0].UserNum;
+        //we grab the first entry in the Bid Database, now that it's in order, This will be the biggest BID.
+        //WINNERBID_NUM gets the user number 
+        int WINNERBID_NUM = UserHold.NewProperty[HouseNum].NewBid[0].UserNum;
 
-            // Here we grav all the data we need on the winning bidder and house
-            string H_Address = UserHold.NewProperty[HouseNum].PropertyAddress;
-            string H_PostCode = UserHold.NewProperty[HouseNum].PropertyPostcode;
-            string H_Info = UserHold.NewProperty[HouseNum].PropertyDetails;
-            int H_Type = UserHold.NewProperty[HouseNum].PropertyType;
-            
-            string OtherUserName = Customer.NewUser[WINNERBID_NUM].UserName;
-            string OtherUserEmail = Customer.NewUser[WINNERBID_NUM].UserEmail;
+        // Here we grav all the data we need on the winning bidder and house
+        string H_Address = UserHold.NewProperty[HouseNum].PropertyAddress;
+        string H_PostCode = UserHold.NewProperty[HouseNum].PropertyPostcode;
+        string H_Info = UserHold.NewProperty[HouseNum].PropertyDetails;
+        int H_Type = UserHold.NewProperty[HouseNum].PropertyType;
 
-            int SoldPrice = UserHold.NewProperty[HouseNum].NewBid[0].BidPrice;
+        string OtherUserName = Customer.NewUser[WINNERBID_NUM].UserName;
+        string OtherUserEmail = Customer.NewUser[WINNERBID_NUM].UserEmail;
 
-            // This below is something we don't talk about
-           // Customer.NewUser[WINNERBID_NUM].AddProperty(H_Address, H_PostCode, H_Info, H_Type);
+        int SoldPrice = UserHold.NewProperty[HouseNum].NewBid[0].BidPrice;
 
-            // once we have all the details in localdata, we then remove the house from the sellers databse
-            UserHold.NewProperty[HouseNum].NewBid.RemoveAt(0);
+        // This below is something we don't talk about
+       // Customer.NewUser[WINNERBID_NUM].AddProperty(H_Address, H_PostCode, H_Info, H_Type);
 
-            // call SaleTax too work out the tax that is payable 
-            double TAX = DataCalculation.SaleTax(SoldPrice, H_Type, H_Info);
+        // once we have all the details in localdata, we then remove the house from the sellers databse
+        UserHold.NewProperty[HouseNum].NewBid.RemoveAt(0);
 
-            // print all the details out
-            UserInterface.Message($"System - " + H_Address + ", " + H_PostCode + ", " + H_Info + " SOLD too " + OtherUserName + " (" + OtherUserEmail + ") FOR $" + SoldPrice + "");
-            UserInterface.Message($"Tax payable $"+ TAX.ToString());
-        }
+        // call SaleTax too work out the tax that is payable 
+        double TAX = DataCalculation.SaleTax(SoldPrice, H_Type, H_Info);
 
-        /// <summary> ******************************************************************************************************************
-        ///                             OPTION 6 - FOR SALE   AND     OPTION 7 -Place a bid   
-        ///                             
-        ///                         Below ListForSale and SearchHouses call the SearchHouses function
-        /// </summary> ******************************************************************************************************************
+        // print all the details out
+        UserInterface.Message($"System - " + H_Address + ", " + H_PostCode + ", " + H_Info + " SOLD too " + OtherUserName + " (" + OtherUserEmail + ") FOR $" + SoldPrice + "");
+        UserInterface.Message($"Tax payable $"+ TAX.ToString());
+    }
 
-        public void ListForSale()
+    /// <summary> ******************************************************************************************************************
+    ///                             OPTION 6 - FOR SALE   AND     OPTION 7 -Place a bid   
+    ///                             
+    ///                         Below ListForSale and SearchHouses call the SearchHouses function
+    /// </summary> ******************************************************************************************************************
+           */
+    public void ListForSale()
+    {
+        SearchHouses(0);
+    }
+
+    public void BidOnHouse()
+    {
+        SearchHouses(1);
+    }
+
+    public void SearchHouses(int function) // SearchHouses if used in the two functions above, as too reduce duplicate code 
+    {
+        // use GetInput too get the users current postcode they want too search for:
+        string House_Postcode = UserInterface.GetInput("Postcode: ");
+
+        // check if postcode is 4 long 
+        bool CheckPostcode = DataCalculation.CheckLength(House_Postcode, 4);
+
+        if (CheckPostcode == true) // if it is 4 char long
         {
-            SearchHouses(0);
-        }
-
-        public void BidOnHouse()
-        {
-            SearchHouses(1);
-        }
-
-        public void SearchHouses(int function) // SearchHouses if used in the two functions above, as too reduce duplicate code 
-        {
-            Message_text = "";
-
-            // use GetInput too get the users current postcode they want too search for:
-            string House_Postcode = UserInterface.GetInput("Postcode: ");
-            
-            // check if postcode is 4 long 
-            bool CheckPostcode = DataCalculation.CheckLength(House_Postcode, 4);
-
-            if (CheckPostcode == true) // if it is 4 char long
+            if (function == 0) // if we want too just list houses for sale 
             {
-                if (function == 0) // if we want too just list houses for sale 
-                {
-                    DataCalculation.DisplayProperty(House_Postcode, "Current Properties On Market", Customer);
-                }
-                else // for we want to bid on a Property;
-                {
-                    DataCalculation.BidProperty(House_Postcode, Customer);
-                }
+                DataCalculation.DisplayProperty(House_Postcode, "Current Properties On Market", Customer);
             }
-            else // throw an error
+            else // for we want to bid on a Property;
             {
-                Message_text = "System - ERROR: PostCode is not 4 characters long ";
+                DataCalculation.BidProperty(House_Postcode, Customer);
             }
         }
-
+        else // throw an error
+        {
+            Message_text = "System - ERROR: PostCode is not 4 characters long ";
+        }
+    }
+     
         /// <summary> ******************************************************************************************************************
         ///               OPTION 8 -            User menu Logout                   User  menu Logout
         ///               
         ///                                                   Logout user
         /// </summary> ******************************************************************************************************************
 
-            public void LogoutCustomer()
+        public void LogoutCustomer()
         {          
             // send message saying user is logged out 
-            UserInterface.Message($"System -  " + Customer.NewUser[CurrentloggedInUser].UserName + " Successfully logged out");
+            UserInterface.Message($"System -  " + Users[CurrentloggedInUser].Name + " Successfully logged out");
             CurrentloggedInUser = -2; // by setting CurrentloggedInUser to -2, the user is no long logged in ;
           
         }
+
 
 
         /// <summary> ******************************************************************************************************************
@@ -303,12 +277,12 @@ namespace TestUserInterface
         public void Run()
         {
             // add main menu
-            Menu.Add("Register as new Customer", AddCustomer);
-            Menu.Add("Login as existing Custiner", LoginCustomer);
+            Menu.Add("Register as new Customer", Register);
+            Menu.Add("Login as existing Custiner", Login);
 
-            // add Submenu
-            SubMenu.Add("Register new land for sale", NewLandRegister);
-            SubMenu.Add("Register a new house for sale", NewHouseRegister);
+            //add Submenu
+            SubMenu.Add("Register new land for sale", RegisterLand);
+            SubMenu.Add("Register a new house for sale", RegisterHouse);
             SubMenu.Add("List my properties ", ListProperties);
             SubMenu.Add("List bids received for a property", ListBids);
             SubMenu.Add("Sell one of my properties to highest bidder", SellHouse);
@@ -339,8 +313,6 @@ namespace TestUserInterface
                    // IconsNfun.UserMenuGreeting(Customer.NewUser[CurrentloggedInUser].UserName);
                     SubMenu.Display();
                 }
-
-                UserInterface.Message(Message_text); // print Message_text strings
             }
          }
 

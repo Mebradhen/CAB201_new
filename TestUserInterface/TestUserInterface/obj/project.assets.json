@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\mrbar\\Documents\\TestUserInterface\\TestUserInterface\\TestUserInterface.csproj",
+      "projectUniqueName": "C:\\Users\\mrbar\\Documents\\GitHub\\CAB201_new\\TestUserInterface\\TestUserInterface\\TestUserInterface.csproj",
       "projectName": "TestUserInterface",
-      "projectPath": "C:\\Users\\mrbar\\Documents\\TestUserInterface\\TestUserInterface\\TestUserInterface.csproj",
+      "projectPath": "C:\\Users\\mrbar\\Documents\\GitHub\\CAB201_new\\TestUserInterface\\TestUserInterface\\TestUserInterface.csproj",
       "packagesPath": "C:\\Users\\mrbar\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\mrbar\\Documents\\TestUserInterface\\TestUserInterface\\obj\\",
+      "outputPath": "C:\\Users\\mrbar\\Documents\\GitHub\\CAB201_new\\TestUserInterface\\TestUserInterface\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
