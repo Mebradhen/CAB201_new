@@ -1,0 +1,13 @@
+C:\Users\woodleya\OneDrive - Queensland University of Technology\Documents\Teaching\2021\CAB201 - S1\Assignments\Assignment 2\TestUserInterface\bin\Debug\netcoreapp3.1\TestUserInterface.exe
+C:\Users\woodleya\OneDrive - Queensland University of Technology\Documents\Teaching\2021\CAB201 - S1\Assignments\Assignment 2\TestUserInterface\bin\Debug\netcoreapp3.1\TestUserInterface.deps.json
+C:\Users\woodleya\OneDrive - Queensland University of Technology\Documents\Teaching\2021\CAB201 - S1\Assignments\Assignment 2\TestUserInterface\bin\Debug\netcoreapp3.1\TestUserInterface.runtimeconfig.json
+C:\Users\woodleya\OneDrive - Queensland University of Technology\Documents\Teaching\2021\CAB201 - S1\Assignments\Assignment 2\TestUserInterface\bin\Debug\netcoreapp3.1\TestUserInterface.runtimeconfig.dev.json
+C:\Users\woodleya\OneDrive - Queensland University of Technology\Documents\Teaching\2021\CAB201 - S1\Assignments\Assignment 2\TestUserInterface\bin\Debug\netcoreapp3.1\TestUserInterface.dll
+C:\Users\woodleya\OneDrive - Queensland University of Technology\Documents\Teaching\2021\CAB201 - S1\Assignments\Assignment 2\TestUserInterface\bin\Debug\netcoreapp3.1\TestUserInterface.pdb
+C:\Users\woodleya\OneDrive - Queensland University of Technology\Documents\Teaching\2021\CAB201 - S1\Assignments\Assignment 2\TestUserInterface\obj\Debug\netcoreapp3.1\TestUserInterface.csprojAssemblyReference.cache
+C:\Users\woodleya\OneDrive - Queensland University of Technology\Documents\Teaching\2021\CAB201 - S1\Assignments\Assignment 2\TestUserInterface\obj\Debug\netcoreapp3.1\TestUserInterface.AssemblyInfoInputs.cache
+C:\Users\woodleya\OneDrive - Queensland University of Technology\Documents\Teaching\2021\CAB201 - S1\Assignments\Assignment 2\TestUserInterface\obj\Debug\netcoreapp3.1\TestUserInterface.AssemblyInfo.cs
+C:\Users\woodleya\OneDrive - Queensland University of Technology\Documents\Teaching\2021\CAB201 - S1\Assignments\Assignment 2\TestUserInterface\obj\Debug\netcoreapp3.1\TestUserInterface.csproj.CoreCompileInputs.cache
+C:\Users\woodleya\OneDrive - Queensland University of Technology\Documents\Teaching\2021\CAB201 - S1\Assignments\Assignment 2\TestUserInterface\obj\Debug\netcoreapp3.1\TestUserInterface.dll
+C:\Users\woodleya\OneDrive - Queensland University of Technology\Documents\Teaching\2021\CAB201 - S1\Assignments\Assignment 2\TestUserInterface\obj\Debug\netcoreapp3.1\TestUserInterface.pdb
+C:\Users\woodleya\OneDrive - Queensland University of Technology\Documents\Teaching\2021\CAB201 - S1\Assignments\Assignment 2\TestUserInterface\obj\Debug\netcoreapp3.1\TestUserInterface.genruntimeconfig.cache
