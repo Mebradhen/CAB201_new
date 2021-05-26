@@ -14,8 +14,6 @@ namespace TestUserInterface
             int option = UserInterface.getOption(1, list.Count);
             return option;
         }
-
-
         public static void DisplayList<T>(string title, IList<T> list)
         {
             Console.WriteLine(title);
@@ -191,7 +189,7 @@ namespace TestUserInterface
 
         public override string ToString() // The ToString override allows us too return Property details in the DisplayList function. 
         {
-            return " A House at - " + Address + ", " + Postcode + ", with: " + Info + " ";
+            return " A House at - " + Address + ", " + Postcode ;
         }
 
     }
@@ -291,12 +289,12 @@ namespace TestUserInterface
         // This function Is used too Display a Property
         public static void DisplayProperty(string PostCode, string Titl, List<User> UsersList)
         {
-            List<SaveList> NewDisplayList = GenerateProperty(PostCode, UsersList);
+          //  List<SaveList> NewDisplayList = GenerateProperty(PostCode, UsersList);
 
-            UserInterface.DisplayList(Titl, NewDisplayList);
+         //   UserInterface.DisplayList(Titl, NewDisplayList);
         }
 
-
+        /*
         /// This Function Genrates a new LIST of all the houses in the registry based on a postcode
         public static List<SaveList> GenerateProperty(string PostCode, List<User> UserList)
         {
@@ -315,6 +313,7 @@ namespace TestUserInterface
             }
             return NewDisplayList;
         }     
+        */ 
     }
   
 
@@ -335,7 +334,7 @@ namespace TestUserInterface
                 }
                 else // for we want to bid on a Property;
                 {
-                    PlaceBid.BidProperty(House_Postcode, UsersList);
+                  //  PlaceBid.BidProperty(House_Postcode, UsersList);
                 }
             }
             else // throw an error
@@ -347,46 +346,46 @@ namespace TestUserInterface
 
     public class PlaceBid : DataCalculation
     {
-        public static void BidProperty(string PostCode, NewUserRegister consumer)
-        {
-            // we call the GenerateProperty function, this function grabs all the properties from all registered consumers based on an input postcode   
-            List<SaveList> NewDisplayList = GenerateProperty(PostCode, consumer);
+        /* public static void BidProperty(string PostCode, NewUserRegister consumer)
+         {
+             // we call the GenerateProperty function, this function grabs all the properties from all registered consumers based on an input postcode   
+           //  List<SaveList> NewDisplayList = GenerateProperty(PostCode, consumer);
 
-            // just a string too hold message strings
-            string Message_bid;
+             // just a string too hold message strings
+             string Message_bid;
 
-            // send the new NewDisplayList off too ChooseFromList, the selected house returns a int
-            int ChoosenHouse = UserInterface.ChooseFromList(NewDisplayList);
+             // send the new NewDisplayList off too ChooseFromList, the selected house returns a int
+             int ChoosenHouse = UserInterface.ChooseFromList(NewDisplayList);
 
-            // get stored house num based on ChoosenHouse int  
-            int UserNum = NewDisplayList[ChoosenHouse].UserNum;
-            int HouseNum = NewDisplayList[ChoosenHouse].HouseNum;
+             // get stored house num based on ChoosenHouse int  
+             int UserNum = NewDisplayList[ChoosenHouse].UserNum;
+             int HouseNum = NewDisplayList[ChoosenHouse].HouseNum;
 
-            //call HighestBid too sort the Bid list into ascending order
-            HighestBid(consumer.NewUser[UserNum].NewProperty[HouseNum].NewBid);
+             //call HighestBid too sort the Bid list into ascending order
+             HighestBid(consumer.NewUser[UserNum].NewProperty[HouseNum].NewBid);
 
-            //check the bid list has any entries 
-            if (consumer.NewUser[UserNum].NewProperty[HouseNum].NewBid.Count <= 0) // if not throw an error 
-            {
-                Message_bid = "No Bids: Enter Starting Bid";
-            }
-            else // if yes, display the current highest bid 
-            {
-                Message_bid = "Current Highest Bid is $" + consumer.NewUser[UserNum].NewProperty[HouseNum].NewBid[0] + " - What will you place?";
-            }
+             //check the bid list has any entries 
+             if (consumer.NewUser[UserNum].NewProperty[HouseNum].NewBid.Count <= 0) // if not throw an error 
+             {
+                 Message_bid = "No Bids: Enter Starting Bid";
+             }
+             else // if yes, display the current highest bid 
+             {
+                 Message_bid = "Current Highest Bid is $" + consumer.NewUser[UserNum].NewProperty[HouseNum].NewBid[0] + " - What will you place?";
+             }
 
-            UserInterface.Message(Message_bid); // display Message_bid
+             UserInterface.Message(Message_bid); // display Message_bid
 
-            int bid_amount = int.Parse(UserInterface.GetInput("Enter Bid ($)"));
+             int bid_amount = int.Parse(UserInterface.GetInput("Enter Bid ($)"));
 
-            UserInterface.Message("Your Bid of $" + bid_amount + " Has been Placed");
+             UserInterface.Message("Your Bid of $" + bid_amount + " Has been Placed");
 
-            // add the Bid too the Property bid list 
-            consumer.NewUser[UserNum].NewProperty[HouseNum].AddBid(UserNum, consumer, bid_amount);
-        }
+             // add the Bid too the Property bid list 
+             consumer.NewUser[UserNum].NewProperty[HouseNum].AddBid(UserNum, consumer, bid_amount);
+         }*/
     }
 
-     public class IconsNfun //IconsNfun is a class that holes just fun little bits for the interface
+    public class IconsNfun //IconsNfun is a class that holes just fun little bits for the interface
     {
         public static void FrontGreeting()
         {

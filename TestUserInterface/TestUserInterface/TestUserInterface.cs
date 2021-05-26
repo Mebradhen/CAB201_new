@@ -258,7 +258,7 @@ namespace TestUserInterface
             SubMenu.Add("Register a new house for sale", RegisterHouse);
             SubMenu.Add("List my properties ", ListProperties);
             SubMenu.Add("List bids received for a property", ListBids);
-            SubMenu.Add("Sell one of my properties to highest bidder", SellHouse);
+          //  SubMenu.Add("Sell one of my properties to highest bidder", SellHouse);
             SubMenu.Add("Search for a property for sale", ListForSale);
             SubMenu.Add("Place a bid on a property", BidOnHouse);
             SubMenu.Add("Logout", LogoutCustomer);
