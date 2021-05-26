@@ -110,7 +110,6 @@ namespace TestUserInterface
             
             if(isNew == true)
             {
-
                 UserInterface.Message("System - Land at " + House_Address + ", " + House_Postcode + " " + House_Area + "m² Registered successfully");
 
                 Users[CurrentloggedInUser].Properties.Add(new Land() { Address = House_Address, Postcode = House_Postcode, Area = House_Area});
@@ -212,47 +211,23 @@ namespace TestUserInterface
         UserInterface.Message($"Tax payable $"+ TAX.ToString());
     }
 
-    /// <summary> ******************************************************************************************************************
-    ///                             OPTION 6 - FOR SALE   AND     OPTION 7 -Place a bid   
-    ///                             
-    ///                         Below ListForSale and SearchHouses call the SearchHouses function
-    /// </summary> ******************************************************************************************************************
-           */
-    public void ListForSale()
-    {
-        SearchHouses(0);
-    }
-
-    public void BidOnHouse()
-    {
-        SearchHouses(1);
-    }
-
-    public void SearchHouses(int function) // SearchHouses if used in the two functions above, as too reduce duplicate code 
-    {
-        // use GetInput too get the users current postcode they want too search for:
-        string House_Postcode = UserInterface.GetInput("Postcode: ");
-
-        // check if postcode is 4 long 
-        bool CheckPostcode = DataCalculation.CheckLength(House_Postcode, 4);
-
-        if (CheckPostcode == true) // if it is 4 char long
+        /// <summary> ******************************************************************************************************************
+        ///                             OPTION 6 - FOR SALE   AND     OPTION 7 -Place a bid   
+        ///                             
+        ///                         Below ListForSale and SearchHouses call the SearchHouses function
+        /// </summary> ******************************************************************************************************************
+               */
+        public void ListForSale()
         {
-            if (function == 0) // if we want too just list houses for sale 
-            {
-                DataCalculation.DisplayProperty(House_Postcode, "Current Properties On Market", Customer);
-            }
-            else // for we want to bid on a Property;
-            {
-                DataCalculation.BidProperty(House_Postcode, Customer);
-            }
+            Search.SearchProperty(Users,0);
         }
-        else // throw an error
+
+        public void BidOnHouse()
         {
-            Message_text = "System - ERROR: PostCode is not 4 characters long ";
+            Search.SearchProperty(Users,1);
         }
-    }
-     
+
+
         /// <summary> ******************************************************************************************************************
         ///               OPTION 8 -            User menu Logout                   User  menu Logout
         ///               
@@ -263,10 +238,8 @@ namespace TestUserInterface
         {          
             // send message saying user is logged out 
             UserInterface.Message($"System -  " + Users[CurrentloggedInUser].Name + " Successfully logged out");
-            CurrentloggedInUser = -2; // by setting CurrentloggedInUser to -2, the user is no long logged in ;
-          
+            CurrentloggedInUser = -2; // by setting CurrentloggedInUser to -2, the user is no long logged in ;        
         }
-
 
 
         /// <summary> ******************************************************************************************************************
