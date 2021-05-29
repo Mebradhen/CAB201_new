@@ -143,7 +143,7 @@ namespace TestUserInterface
 
 
 
-    //NewUserRegister class, This is our class where we can create list objects. The aim being to store user details.
+    //User class is for storing user info
     public class User
     {
         public string Name { get; set; }
@@ -154,28 +154,43 @@ namespace TestUserInterface
     }
 
 
-    //Property Register, This class here is where we can create the Property Objects, too save Property Details
+    //Property class is for storing info on Properties 
     public abstract class Property
-    {         
+    {
         public string Address { get; set; }
         public string Postcode { get; set; }
+        public User Owner { get; internal set; }      
+        public double SalePrice { get; set; }
 
         public List<Bid> Bids = new List<Bid>();
+        public abstract double CalculateSalesTax();
     }
 
-    public class Land : Property
+    public class Land : Property // using polymorphism and inheritance, the land class is an child of Property. Storing info for land
     {
-        public string Area { get; set; }
+        private const double LAND_TAX_PER_SQUARE_METRE = 5.50;
+        public double AreaInSquareMetres { get; set; }
+        public override double CalculateSalesTax()
+        {
+            return AreaInSquareMetres * LAND_TAX_PER_SQUARE_METRE;
+        }
 
         public override string ToString() // The ToString override allows us too return Property details in the DisplayList function. 
         {
-            return " Land at - " + Address + ", " + Postcode + ", with: " + Area + " m²";
+            return $" Land at - {Address}, {Postcode}, with: {AreaInSquareMetres} m²";
         }
     }
 
-    public class House : Property
+    public class House : Property// using polymorphism and inheritance, the House class is an child of Property. Storing info for House
     {
+        private const double SALES_TAX_ON_HOUSING = 0.10f;
+
         public string Info { get; set; }
+
+        public override double CalculateSalesTax()
+        {
+            return this.SalePrice * SALES_TAX_ON_HOUSING;
+        }
 
         public override string ToString() // The ToString override allows us too return Property details in the DisplayList function. 
         {
@@ -183,76 +198,29 @@ namespace TestUserInterface
         }
     }
 
-    public class SortHouse : Property
+    // NewBidRegister is yet another class, where other scripts can call it to make an object that stores a Properties bids
+    public class Bid
     {
-        public string Bidder { get; set; }
+        public int UserNum { get; set; }
+        public int BidPrice { get; set; }
+    }
+
+    //ListDisplay is a simple class we call, when we genrate a display list for serching 
+    public class ListDisplay
+    {
+        public int UserNum { get; set; }
+        public int HouseNum { get; set; }
+        public string Houseinfo { get; set; }
 
         public override string ToString() // The ToString override allows us too return Property details in the DisplayList function. 
         {
-            return " A House at - " + Address + ", " + Postcode ;
+            return Houseinfo;
         }
-
     }
 
-
-    // NewBidRegister is yet another class, where other scripts can call it to make an object that stores a Properties bids
-    public class Bid
-    { 
-          public int UserNum { get; set; }
-          public int BidPrice { get; set; }
-    }
 
     public class DataCalculation // the DataCalculation Class, is how any functions needed for Calculations needed to run the program 
-    {  
-  
-       // this function is where we work out the TAX for the sale of properties 
-       public static double SaleTax(double SALEPrice, int Type, String Info)
-       {
-           double tax = 0.0f;
-
-           if(Type == 0)
-           {
-               tax = double.Parse(Info) * 5.50;
-           }
-           else
-           {
-               tax = (0.10 * SALEPrice);
-           }
-
-           tax = Math.Round(tax);
-
-           return tax;
-       }
-  
-        // RegisterHouseArea helps to reduce duplicate code, given both use this code. 
-        public static bool CheckIFNew(List<Property> HouseList, string HAddress, string HPostcode)
-        {
-            bool OldNew = false;
-
-            // Here we use CheckPropertyDataBase too check if the house is new or already for sale;
-            int Checkhouse = HouseList.FindIndex(ent => ent.Address == HAddress);
-
-            // We then use CheckLength again too see how long the HPostcode var is.
-            bool CheckPostcode = DataCalculation.CheckLength(HPostcode, 4);
-
-            if (CheckPostcode == true) // IF Postcode is not over 4
-            {
-                if (Checkhouse == -1) // house is new 
-                {
-                    OldNew = true;
-                }
-                else // Throw error 
-                {
-                    UserInterface.Error("System - ERROR: Property is already Registered");
-                }
-            }
-            else // Throw error 
-            {
-                UserInterface.Error("System - ERROR: PostCode is not 4 characters long");
-            }
-            return OldNew;
-        }
-
+    {
         // A little function too check the length of an string. then return a bool 
         public static bool CheckLength(string input, int length)
         {
@@ -265,7 +233,7 @@ namespace TestUserInterface
 
             return IsOver;
         }
-           
+
         // A little function too check FOR something in a string. then return a bool 
         public static bool CheckFor(string input, string Char)
         {
@@ -279,26 +247,17 @@ namespace TestUserInterface
             return IsOver;
         }
 
-         //A little function too sort a list in ascending order
-         public static void HighestBid(List<Bid> BidList)
-          {
-              BidList.Sort((x, y) => y.BidPrice.CompareTo(x.BidPrice));
-
-          }
-
-        // This function Is used too Display a Property
-        public static void DisplayProperty(string PostCode, string Titl, List<User> UsersList)
+        //A little function too sort a list in ascending order
+        public static void HighestBid(List<Bid> BidList)
         {
-          //  List<SaveList> NewDisplayList = GenerateProperty(PostCode, UsersList);
+            BidList.Sort((x, y) => y.BidPrice.CompareTo(x.BidPrice));
 
-         //   UserInterface.DisplayList(Titl, NewDisplayList);
         }
 
-        /*
         /// This Function Genrates a new LIST of all the houses in the registry based on a postcode
-        public static List<SaveList> GenerateProperty(string PostCode, List<User> UserList)
+        public static List<ListDisplay> GenerateDisplayList(string PostCode, List<User> UserList)
         {
-            List<SaveList> NewDisplayList = new List<SaveList>(); //the new list of houses 
+            List<ListDisplay> NewDisplayList = new List<ListDisplay>(); //the new list of houses 
 
             for (int i = 0; i < UserList.Count; i++) // for loop runs through all registered users   
             {
@@ -307,85 +266,103 @@ namespace TestUserInterface
                     if (UserList[i].Properties[ii].Postcode == PostCode) // check if the current propertie has the wanted postcode 
                     {
                         //if true, then add the needed info too a new object called SaveList, and add that too the NewDisplayList
-                        NewDisplayList.Add(new SaveList(UserList[i].Properties[ii].ToString(), i, ii));
+                        NewDisplayList.Add(new ListDisplay { UserNum = i, HouseNum = ii, Houseinfo = UserList[i].Properties[ii].ToString()});
                     }
                 }
             }
             return NewDisplayList;
-        }     
-        */ 
+        }
+
     }
-  
 
-    public class Search : DataCalculation
+    // the bidding class, is for Calculations based around bidding 
+    public class Bidding : DataCalculation
     {
-        public static void SearchProperty(List<User> UsersList, int function) // SearchHouses if used in the two functions above, as too reduce duplicate code 
+        public static void BidProperty(int ChoosenProperties, List<ListDisplay> DisplayList, List<User> userList)
         {
-            // use GetInput too get the users current postcode they want too search for:
-            string House_Postcode = UserInterface.GetInput("Postcode: ");
-            // check if postcode is 4 long 
-            bool CheckPostcode = CheckLength(House_Postcode, 4);
+            int UserNum = DisplayList[ChoosenProperties].UserNum;
+            int HouseNum = DisplayList[ChoosenProperties].HouseNum;
 
-            if (CheckPostcode == true) // if it is 4 char long
+            int BidNum = Get.PropertyBid(userList[UserNum].Properties[HouseNum].Bids);
+
+            if(BidNum >= 0)
             {
-                if (function == 0) // if we want too just list houses for sale 
-                {
-                    DisplayProperty(House_Postcode, "Current Properties On Market", UsersList);
-                }
-                else // for we want to bid on a Property;
-                {
-                  //  PlaceBid.BidProperty(House_Postcode, UsersList);
-                }
+                userList[UserNum].Properties[HouseNum].Bids.Add(new Bid { UserNum = UserNum, BidPrice = BidNum });
+                UserInterface.Message($"System -  Bid of $" + BidNum + " for " + userList[UserNum].Properties[HouseNum].ToString() + " Successfully Placed");
             }
-            else // throw an error
-            {
-                UserInterface.Error("System - ERROR: PostCode is not 4 characters long ");
-            }
+              
         }
     }
 
-    public class PlaceBid : DataCalculation
+
+    // the Get class, is for anything where we need to Get data 
+    public class Get : DataCalculation
     {
-        /* public static void BidProperty(string PostCode, NewUserRegister consumer)
-         {
-             // we call the GenerateProperty function, this function grabs all the properties from all registered consumers based on an input postcode   
-           //  List<SaveList> NewDisplayList = GenerateProperty(PostCode, consumer);
+        public static string PropertyAddress(List<User> User) // get PropertyAddress
+        {
+            string Property_Address = UserInterface.GetInput("Address");
 
-             // just a string too hold message strings
-             string Message_bid;
+            int Checkhouse = -1;
 
-             // send the new NewDisplayList off too ChooseFromList, the selected house returns a int
-             int ChoosenHouse = UserInterface.ChooseFromList(NewDisplayList);
+            for (int i = 0; i < User.Count; i++) // for loop runs through all registered users   
+            {
+                Checkhouse = User[i].Properties.FindIndex(ent => ent.Address == Property_Address);
+            }
+            
+            if (Checkhouse != -1)
+            {
+                UserInterface.Error("Property is already Registered");
+                return null;
+            }
+            return Property_Address;
+        }
 
-             // get stored house num based on ChoosenHouse int  
-             int UserNum = NewDisplayList[ChoosenHouse].UserNum;
-             int HouseNum = NewDisplayList[ChoosenHouse].HouseNum;
+        public static string PropertyPostcode() // get Postcode
+        {
+            string Property_Postcode = UserInterface.GetInput("Postcode");
 
-             //call HighestBid too sort the Bid list into ascending order
-             HighestBid(consumer.NewUser[UserNum].NewProperty[HouseNum].NewBid);
+            bool PostcodeLegth = CheckLength(Property_Postcode, 4);
 
-             //check the bid list has any entries 
-             if (consumer.NewUser[UserNum].NewProperty[HouseNum].NewBid.Count <= 0) // if not throw an error 
-             {
-                 Message_bid = "No Bids: Enter Starting Bid";
-             }
-             else // if yes, display the current highest bid 
-             {
-                 Message_bid = "Current Highest Bid is $" + consumer.NewUser[UserNum].NewProperty[HouseNum].NewBid[0] + " - What will you place?";
-             }
+            if (PostcodeLegth == false)
+            {
+                UserInterface.Error("PostCode is not 4 characters long");
+                return null;
+            }
 
-             UserInterface.Message(Message_bid); // display Message_bid
+            return Property_Postcode;
+        }
 
-             int bid_amount = int.Parse(UserInterface.GetInput("Enter Bid ($)"));
+        public static int PropertyBid(List<Bid> Bidlist) // Get Bids
+        {
+            DataCalculation.HighestBid(Bidlist);
 
-             UserInterface.Message("Your Bid of $" + bid_amount + " Has been Placed");
+            string textprint;
+            int vaule = 0;
 
-             // add the Bid too the Property bid list 
-             consumer.NewUser[UserNum].NewProperty[HouseNum].AddBid(UserNum, consumer, bid_amount);
-         }*/
+            if (Bidlist.Count == 0)
+            {
+                textprint = "System - There are no bids on this Property, What do you place?";
+                vaule = 0;
+            }
+            else
+            {
+                textprint = "System - Cuurent Bid is $" + Bidlist[0].BidPrice + ", What do you place?";
+                vaule = Bidlist[0].BidPrice;
+            }
+
+            int Property_Bid = UserInterface.GetInteger(textprint);
+
+            if (Property_Bid <= vaule)
+            {
+                UserInterface.Error("Bid too low");
+                return -1;
+            }
+
+            return Property_Bid;
+        }
     }
 
-    public class IconsNfun //IconsNfun is a class that holes just fun little bits for the interface
+    public class Greetings //IconsNfun is a class that holes just fun little bits for the interface
     {
         public static void FrontGreeting()
         {
@@ -403,7 +380,7 @@ namespace TestUserInterface
             UserInterface.Message("------------------------------------------------");
         }
     }
-        
+
 }
 
 
