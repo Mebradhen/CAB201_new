@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="TestUserInterface.Bid">
+    <Position X="5.75" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAgAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Bids_UserInterface.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TestUserInterface.Bids">
+    <Position X="7.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAEAARgAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Bids_UserInterface.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TestUserInterface.DataCalculation">
+    <Position X="12.25" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAgAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAA=</HashCode>
+      <FileName>DataCal_UserInterface.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TestUserInterface.Greetings">
+    <Position X="14.25" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAgAA=</HashCode>
+      <FileName>UserInterface.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TestUserInterface.House">
+    <Position X="2" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAgAAAAAAEAAAAAAAAAAAEAAAAA=</HashCode>
+      <FileName>Property_UserInterface.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TestUserInterface.Land">
+    <Position X="4.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAEIAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>Property_UserInterface.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TestUserInterface.Menu_UserInterface">
+    <Position X="7" Y="4.75" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="TestUserInterface.Menu_UserInterface.MenuItem" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Menu_UserInterface.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAAAAAAAgAAQAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Menu_UserInterface.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TestUserInterface.Property">
+    <Position X="3.25" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgCACQAAAAAAAAAAgAAAAEAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>Property_UserInterface.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TestUserInterface.PropertyViewModel">
+    <Position X="10.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAIAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAACA=</HashCode>
+      <FileName>Property_UserInterface.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TestUserInterface.RealEstateUserInterface">
+    <Position X="9.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEAAAQAAAACCAAgAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>RealEstate_UserInterface.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TestUserInterface.TestUserInterface">
+    <Position X="16" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAQAADAAIIACAAAAAIIAAABEAAgIAAAAgAAQBAAAAAI=</HashCode>
+      <FileName>TestUserInterface.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TestUserInterface.User">
+    <Position X="8.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAQAAAAAAAACAAAAAAACAAA=</HashCode>
+      <FileName>User_UserInterface.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TestUserInterface.UserInterface">
+    <Position X="12.25" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAAAAAYiAACAAAAAAAAAAAAAIAAgAIAgAAAA=</HashCode>
+      <FileName>UserInterface.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TestUserInterface.Users">
+    <Position X="14.25" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAEAAAA=</HashCode>
+      <FileName>User_UserInterface.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

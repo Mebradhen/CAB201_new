@@ -2,10 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Menu
+namespace TestUserInterface
 {
+    /// <summary> ******************************************************************************************************************
+    ///     
+    ///                                             Welcome to Menu_UserInterface.cs
+    ///                                                             
+    ///                       This File holes majority of classes / methords too do with Menu functions 
+    ///                       
+    ///                         This is pretty much the orginal classes and methods from blackboard files 
+    ///                                                                               
+    /// </summary>******************************************************************************************************************
+
     //the menu class, used too create and display a list of menu options  
-    public class Menu
+    public class Menu_UserInterface
     {
         class MenuItem
         {

@@ -6,22 +6,34 @@ using System.Linq;
 
 namespace TestUserInterface
 {
+    /// <summary> ******************************************************************************************************************
+    ///     
+    ///                                             Welcome to TestUserInterface.cs
+    ///                                                             
+    ///                              This File holes is the Master Mail where everything is called from!!!
+    ///                              
+    ///                                                        ▐███████▌
+    ///                                                        ▐░▀░▀░▀░▌    
+    ///                                                        ▐▄▄▄▄▄▄▄▌
+    ///                                                  ▄▀▀▀█▒▐░▀▀▄▀▀░▌▒█▀▀▀▄
+    ///                                                  ▌▌▌▌▐▒▄▌░▄▄▄░▐▄▒▌▐▐▐▐
+    /// </summary>******************************************************************************************************************
+
     class TestUserInterface
     {
         // private scope object hold vars 
-        Menu Menu;
-        Menu SubMenu;
-        //List<User> Users;
+        Menu_UserInterface Menu;
+        Menu_UserInterface SubMenu;
         Users Users;
 
         //This User var holds the current user 
         User CurrentUser = null;
 
         // In TestUserInterface we create the objects we need for this menu. 
-        public TestUserInterface()
+        private TestUserInterface()
         {
-            Menu = new Menu(); // Main Menu
-            SubMenu = new Menu(); //Sub Menu
+            Menu = new Menu_UserInterface(); // Main Menu
+            SubMenu = new Menu_UserInterface(); //Sub Menu
             Users = new Users();
         }
 
@@ -58,37 +70,14 @@ namespace TestUserInterface
 
         public void RegisterLand()
         {
-            var Land = GetNewLandInfo();
+            var Land = RealEstateUserInterface.GetNewLandInfo(CurrentUser , Users);
             if (Land != null)
             {
                 CurrentUser.Properties.Add(Land);
             }
         }
 
-        private Land GetNewLandInfo()
-        {
-            // Make sure we are getting a new property address
-            string PropertyAddress = RealEstateUserInterface.GetNewPropertyAddress(Users.UserList);
-
-            if (PropertyAddress == null) // PropertyAddress already exits, then return null
-            {
-                return null;
-            }
-
-            //now use PropertyPostcode of Get too Postcode and check if 4 char long
-            string PropertyPostcode = RealEstateUserInterface.GetPostcode();
-
-            if (PropertyPostcode == null) // if it is not 4 long, return null
-            {
-                return null;
-            }
-
-            int Property_Area = UserInterface.GetInteger("Area");
-
-            // print it all out
-            UserInterface.Message("System - Land at " + PropertyAddress + ", " + PropertyPostcode + " " + Property_Area + "m² Registered successfully");
-            return new Land() { Address = PropertyAddress, Postcode = PropertyPostcode, AreaInSquareMetres = Property_Area, Owner = CurrentUser };
-        }
+    
 
         /// <summary> ******************************************************************************************************************
         ///                 OPTION 2        Register new House                Register new House 
@@ -98,34 +87,11 @@ namespace TestUserInterface
 
         public void RegisterHouse()
         {
-            var House = GetNewHouseInfo();
+            var House = RealEstateUserInterface.GetNewHouseInfo(CurrentUser, Users);
             if (House != null)
             {
                 CurrentUser.Properties.Add(House);
             }
-        }
-        private House GetNewHouseInfo()
-        {
-            //use PropertyAddress of the Get class, too get an input and check it with database
-            string PropertyAddress = RealEstateUserInterface.GetNewPropertyAddress(Users.UserList);
-
-            if (PropertyAddress == null)
-            {
-                return null;
-            }
-
-            //now use PropertyPostcode of Get too Postcode and check if 4 char long
-            string PropertyPostcode = RealEstateUserInterface.GetPostcode();
-
-            if (PropertyPostcode == null)
-            {
-                return null;
-            }
-
-            string House_desc = UserInterface.GetInput("Enter description of house (list of rooms etc)");
-
-            UserInterface.Message("system - House at " + PropertyAddress + ", " + PropertyPostcode + " " + House_desc + " Registered successfully");
-            return new House() { Address = PropertyAddress, Postcode = PropertyPostcode, Info = House_desc, Owner = CurrentUser };
         }
 
 
@@ -173,43 +139,7 @@ namespace TestUserInterface
         private void SellHouse()
         {
 
-            var Bidinfo = SellHouseinfo();
-            UserInterface.Message(Bidinfo);
-        }
-
-        private string SellHouseinfo()
-        {
-            //call ChooseFromList, where we list all houses the user owns.
-            int HouseNum = UserInterface.ChooseFromList(CurrentUser.Properties);
-
-            CurrentUser.Properties[HouseNum].Bids.SortBids();
-
-            bool countcheck = DataCalculation.CheckCount(CurrentUser.Properties[HouseNum].Bids.BidList);
-
-            if (countcheck == false)
-            {
-                return "Currently no Bids";
-            }
-
-            //we grab the first entry in the Bid Database, now that it's in order, This will be the biggest BID.
-            var highestBid = CurrentUser.Properties[HouseNum].Bids.GetHighestBid();
-            var purchaser = highestBid.Owner;
-            int soldPrice = highestBid.BidPrice;
-
-
-            // we send the final sold price off to the database (this is for future expandability) 
-            CurrentUser.Properties[HouseNum].SalePrice = soldPrice;
-
-            // call CalculateSalesTax too work out the tax that is payable 
-            double TAX = CurrentUser.Properties[HouseNum].CalculateSalesTax();
-
-            // print all the details out
-            UserInterface.Message($"System - " + CurrentUser.Properties[HouseNum].ToString() + " SOLD too " + purchaser.Name + " (" + CurrentUser.Email + ") FOR $" + soldPrice + "");
-
-            // once we have all the details in localdata, we then remove the house from the sellers databse
-            CurrentUser.Properties.RemoveAt(0);
-
-            return "Tax payable $" + TAX.ToString() + "";
+            PropertySelling.SellHouseinfo(CurrentUser);
         }
 
         /// <summary> ******************************************************************************************************************
@@ -238,28 +168,32 @@ namespace TestUserInterface
         public void BidOnProperty()
         {
             var chosenPostcode = RealEstateUserInterface.GetPostcode();
-            if (chosenPostcode != null)
+
+            if (chosenPostcode == null)
             {
-                List<PropertyViewModel> chosenProperties = DataCalculation.GenerateDisplayList(chosenPostcode, Users.UserList); //GenerateDisplayList makes a list of houses at that postcode
-
-                if (chosenProperties.Count() == 0)
-                {
-                    UserInterface.Error("There are no properties at that post code");
-                    return;
-                }
-
-                PropertyViewModel chosenPropertyViewModel = UserInterface.ChooseItemFromList(chosenProperties);
-
-                if (chosenPropertyViewModel.Owner == CurrentUser)
-                {
-                    UserInterface.Error("Can't Sell Your Own Property To Yourself");
-                }
-                else
-                {
-                    var chosenProperty = chosenPropertyViewModel.Owner.Properties[chosenPropertyViewModel.HouseNum];
-                    chosenProperty.PlaceBid();// PlaceBid allows us to place a bid
-                }
+                return;
             }
+
+            List<PropertyViewModel> chosenProperties = DataCalculation.GenerateDisplayList(chosenPostcode, Users.UserList); //GenerateDisplayList makes a list of houses at that postcode
+
+            if (chosenProperties.Count() == 0)
+            {
+                UserInterface.Error("There are no properties at that post code");
+                return;
+            }
+
+            PropertyViewModel chosenPropertyViewModel = UserInterface.ChooseItemFromList(chosenProperties);
+
+            if (chosenPropertyViewModel.Owner == CurrentUser)
+            {
+                UserInterface.Error("Can't Sell Your Own Property To Yourself");
+            }
+            else
+            {
+                var chosenProperty = chosenPropertyViewModel.Owner.Properties[chosenPropertyViewModel.HouseNum];
+                chosenProperty.PlaceBid();// PlaceBid allows us to place a bid
+            }
+
         }
 
 
@@ -287,11 +221,11 @@ namespace TestUserInterface
 
             // add main menu
             Menu.Add("Register as new Customer", Users.RegisterUser);
-            Menu.Add("Login as existing Custiner", Login);
+            Menu.Add("Login as existing Customer", Login);
 
             //add Submenu
-            SubMenu.Add("Register new land for sale", RegisterLand);
-            SubMenu.Add("Register a new house for sale", RegisterHouse);
+            SubMenu.Add("Register new land for sale", RegisterHouse);
+            SubMenu.Add("Register a new house for sale", RegisterLand);
             SubMenu.Add("List my properties ", ListProperties);
             SubMenu.Add("List bids received for a property", ListBids);
             SubMenu.Add("Sell one of my properties to highest bidder", SellHouse);
@@ -323,7 +257,7 @@ namespace TestUserInterface
         // MAIN RUN FUNCTION!
         static void Main(string[] args)
         {
-            var ui = new TestUserInterface();
+            TestUserInterface ui = new TestUserInterface();
             ui.Run();
         }
     }
