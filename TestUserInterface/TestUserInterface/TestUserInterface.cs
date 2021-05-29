@@ -168,7 +168,6 @@ namespace TestUserInterface
             {
                 CurrentUser.Properties.Add(House);
             }
-
         }
         private House GetNewHouseInfo()
         {
@@ -230,14 +229,29 @@ namespace TestUserInterface
         ///                        SellHouse is where we sell a house too the highest bidder 
         /// </summary> ******************************************************************************************************************
 
-    
-        public void SellHouse() 
+
+        public void SellHouse()
         {
+
+            var Bidinfo = SellHouseinfo();
+            UserInterface.Message(Bidinfo);
+        }
+
+        private string SellHouseinfo()
+        {
+
             //call ChooseFromList, where we list all houses the user owns.
             int HouseNum = UserInterface.ChooseFromList(CurrentUser.Properties);
 
             //Here we call HighestBid, HighestBid will order the Bidlist in ascending order
             DataCalculation.HighestBid(CurrentUser.Properties[HouseNum].Bids);
+
+            bool countcheck = DataCalculation.CheckCount(CurrentUser.Properties[HouseNum].Bids);
+
+            if (countcheck == false)
+            {
+                return "Currently no Bids";
+            }
 
             //we grab the first entry in the Bid Database, now that it's in order, This will be the biggest BID.
             int WinNum = CurrentUser.Properties[HouseNum].Bids[0].UserNum;
@@ -251,10 +265,11 @@ namespace TestUserInterface
 
             // print all the details out
             UserInterface.Message($"System - " + CurrentUser.Properties[HouseNum].ToString() + " SOLD too " + CurrentUser.Name + " (" + CurrentUser.Email + ") FOR $" + SoldPrice + "");
-            UserInterface.Message($"Tax payable $"+ TAX.ToString());
 
             // once we have all the details in localdata, we then remove the house from the sellers databse
             CurrentUser.Properties.RemoveAt(0);
+
+            return "Tax payable $" + TAX.ToString() + "";
         }
 
         /// <summary> ******************************************************************************************************************

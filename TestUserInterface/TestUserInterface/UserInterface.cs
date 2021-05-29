@@ -234,6 +234,18 @@ namespace TestUserInterface
             return IsOver;
         }
 
+        public static bool CheckCount<T>(IList<T> input)
+        {
+            bool IsOver = false;
+
+            if ((input.Count) > 0)
+            {
+                IsOver = true;
+            }
+
+            return IsOver;
+        }
+
         // A little function too check FOR something in a string. then return a bool 
         public static bool CheckFor(string input, string Char)
         {
