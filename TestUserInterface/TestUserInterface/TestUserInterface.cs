@@ -243,6 +243,11 @@ namespace TestUserInterface
             //call ChooseFromList, where we list all houses the user owns.
             int HouseNum = UserInterface.ChooseFromList(CurrentUser.Properties);
 
+            if (CurrentUser.Properties[HouseNum].Owner == CurrentUser)
+            {
+                return "Can't Sell House Too Self";
+            }
+
             //Here we call HighestBid, HighestBid will order the Bidlist in ascending order
             DataCalculation.HighestBid(CurrentUser.Properties[HouseNum].Bids);
 
@@ -304,8 +309,14 @@ namespace TestUserInterface
 
                 var num = UserInterface.ChooseFromList(ListMade); // choose a house from that list
 
-                Bidding.BidProperty(num, ListMade, Users); // BidProperty allows us to place a bid
-
+                if (CurrentUser.Properties[num].Owner == CurrentUser)
+                {
+                    UserInterface.Message("Can't Sell House Too Self");
+                }
+                else
+                {
+                    Bidding.BidProperty(num, ListMade, Users); // BidProperty allows us to place a bid
+                }
             }
         }
 
