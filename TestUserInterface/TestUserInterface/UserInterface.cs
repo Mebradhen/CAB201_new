@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 //TestUserInterface is the script where we call and run everything from
 
@@ -11,9 +12,20 @@ namespace TestUserInterface
         {
             System.Diagnostics.Debug.Assert(list.Count > 0);
             DisplayList("Please choose one of the following:", list);
-            int option = UserInterface.getOption(1, list.Count);
+            int option = UserInterface.GetOption(1, list.Count);
             return option;
         }
+
+        // Given a list -- get user to choose an item (starting at 1...)
+        // and return the actual the relevant item (not the number)
+        public static T ChooseItemFromList<T>(IList<T> list)
+        {
+            System.Diagnostics.Debug.Assert(list.Count > 0);
+            DisplayList("Please choose one of the following:", list);
+            int option = UserInterface.GetOption(1, list.Count);
+            return list[option];
+        }
+
         public static void DisplayList<T>(string title, IList<T> list)
         {
             Console.WriteLine(title);
@@ -26,7 +38,7 @@ namespace TestUserInterface
             Console.WriteLine();
         }
 
-        public static int getOption(int min, int max)
+        public static int GetOption(int min, int max)
         {
             while (true)
             {
@@ -44,6 +56,7 @@ namespace TestUserInterface
             Console.Write("{0}: ", prompt);
             return Console.ReadLine();
         }
+
 
         public static int GetInteger(string prompt)
         {
@@ -89,56 +102,163 @@ namespace TestUserInterface
 
         public static void Error(string msg)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"{msg}, please try again");
             Console.WriteLine();
+            Console.ResetColor();
         }
 
         public static void Message(object msg)
         {
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(msg);
             Console.WriteLine();
+            Console.ResetColor();
+        }
+
+        public static User GetNewUserInfo(Users users)
+        {
+            var CustomerName = UserInterface.GetInput("Full name");
+            var CustomerEmail = UserInterface.GetInput("Email");
+
+            // Here we are checking if the Email has a legit @ in it. 
+            bool AtCheck = DataCalculation.CheckFor(CustomerEmail, "@");
+
+            if (!AtCheck)
+            {
+                UserInterface.Error("Email is missing an @");
+                return null;
+            }
+
+            var Customerpassword = UserInterface.GetPassword("Password");
+
+            // here we check if there is any other users with the same email 
+            var userEmailExists = users.Exists(CustomerEmail);
+
+            if (userEmailExists)
+            {
+                UserInterface.Error("User is already registered");
+                return null;
+            }
+
+            UserInterface.Message("System - " + CustomerName + " registered successfully");
+
+            return new User() { Name = CustomerName, Email = CustomerEmail, Password = Customerpassword };
+        }
+
+    }
+
+
+    /// <summary>
+    /// UserInterface methods that are useful for the Real Estate Industry
+    /// </summary>
+    public class RealEstateUserInterface
+    {
+        public static string GetPostcode()
+        {
+            string Property_Postcode = UserInterface.GetInput("Postcode");
+
+            bool PostcodeLegth = DataCalculation.CheckLength(Property_Postcode, 4);
+
+            if (PostcodeLegth == false)
+            {
+                UserInterface.Error("PostCode is not 4 characters long");
+                return null;
+            }
+
+            return Property_Postcode;
+        }
+
+        public static int GetPropertyBid(Bids bids) // Get Bids
+        {
+            string textprint;
+
+            int highestBidPrice = bids.GetHighestBidPrice();
+
+            if (bids.Count == 0)
+            {
+                textprint = "System - There are no bids on this Property, What do you place?";
+            }
+            else
+            {
+                textprint = "System - Current Highest Bid is $" + highestBidPrice + ", What do you place?";
+            }
+
+            int Property_Bid = UserInterface.GetInteger(textprint);
+
+            if (Property_Bid <= highestBidPrice)
+            {
+                UserInterface.Error("Bid too low");
+                return -1;
+            }
+
+            return Property_Bid;
+        }
+
+        public static string GetNewPropertyAddress(List<User> User)
+        {
+            string Property_Address = UserInterface.GetInput("Address");
+
+            int Checkhouse = -1;
+
+            for (int i = 0; i < User.Count; i++) // for loop runs through all registered users
+            {
+                Checkhouse = User[i].Properties.FindIndex(ent => ent.Address == Property_Address);
+            }
+
+            if (Checkhouse != -1)
+            {
+                UserInterface.Error("Property is already Registered");
+                return null;
+            }
+            return Property_Address;
         }
     }
 
 
-    // the menu class, used too create and display a list of menu options  
-    public class Menu
+   
+
+    public class Users
     {
-        class MenuItem
+        public List<User> UserList { get; private set; } = new List<User>();
+
+        public bool Exists(string customerEmail)
         {
-            private string item;
-            private Action selected;
+            return UserList.Any(u => u.Email == customerEmail);
+        }
 
-            public MenuItem(string item, Action eventHandler)
+        internal void RegisterUser()
+        {
+            var user = UserInterface.GetNewUserInfo(this);
+            if (user != null)
             {
-                this.item = item;
-                selected = eventHandler;
-            }
-
-            public void select()
-            {
-                selected();
-            }
-
-            public override string ToString()
-            {
-                return item;
+                UserList.Add(user);
             }
         }
 
-        private List<MenuItem> items = new List<MenuItem>();
-
-        public void Add(string menuItem, Action eventHandler)
+        public User Login(string email, string password)
         {
-            items.Add(new MenuItem(menuItem, eventHandler));
+
+            //Cross checking the input data with the user data base, output is the user data's position 
+            int CheckEmail = UserList.FindIndex(ent => ent.Email == email);
+
+            // if email dose not exits in database
+            if (CheckEmail == -1)
+            {
+                return null;
+            }
+
+            // does the password match the email
+            var user = UserList[CheckEmail];
+            if (user.Password != password)
+            {
+                return null;
+            }
+
+            //good;
+            return user;
         }
 
-        public void Display()
-        {
-            UserInterface.DisplayList("Please select one of the following:", items);
-            var option = UserInterface.getOption(1, items.Count);
-            items[option].select();
-        }
     }
 
 
@@ -154,16 +274,33 @@ namespace TestUserInterface
     }
 
 
+
+
     //Property class is for storing info on Properties 
     public abstract class Property
     {
         public string Address { get; set; }
         public string Postcode { get; set; }
-        public User Owner { get; internal set; }      
+        public User Owner { get; set; }
         public double SalePrice { get; set; }
 
-        public List<Bid> Bids = new List<Bid>();
+        public Bids Bids = new Bids();
         public abstract double CalculateSalesTax();
+
+        public void PlaceBid()
+        {
+            User owner = Owner;
+
+            double BidNum = RealEstateUserInterface.GetPropertyBid(Bids);
+
+            BidNum = Math.Round(BidNum);
+
+            if (BidNum >= 0)
+            {
+                Bids.Add(new Bid { Owner = owner, BidPrice = (int)BidNum });
+                UserInterface.Message($"System -  Bid of $" + (int)BidNum + " for " + this.ToString() + " Successfully Placed");
+            }
+        }
     }
 
     public class Land : Property // using polymorphism and inheritance, the land class is an child of Property. Storing info for land
@@ -198,17 +335,54 @@ namespace TestUserInterface
         }
     }
 
+
+
+
     // NewBidRegister is yet another class, where other scripts can call it to make an object that stores a Properties bids
     public class Bid
     {
-        public int UserNum { get; set; }
+        public User Owner { get; set; }
         public int BidPrice { get; set; }
+        public override string ToString()
+        {
+            return "$" + BidPrice.ToString();
+        }
+    }
+
+    public class Bids
+    {
+        public List<Bid> BidList { get; private set; } = new List<Bid>();
+
+        public int Count { get { return BidList.Count; } }
+
+        public void SortBids()
+        {
+            BidList.Sort((x, y) => y.BidPrice.CompareTo(x.BidPrice));
+        }
+
+        public int GetHighestBidPrice()
+        {
+            return GetHighestBid()?.BidPrice ?? 0;
+        }
+        public Bid GetHighestBid()
+        {
+            if (BidList.Count == 0) return null;
+
+            SortBids();
+
+            return BidList[0];
+        }
+
+        public void Add(Bid bid)
+        {
+            BidList.Add(bid);
+        }
     }
 
     //ListDisplay is a simple class we call, when we genrate a display list for serching 
-    public class ListDisplay
+    public class PropertyViewModel
     {
-        public int UserNum { get; set; }
+        public User Owner { get; set; }
         public int HouseNum { get; set; }
         public string Houseinfo { get; set; }
 
@@ -221,18 +395,12 @@ namespace TestUserInterface
 
     public class DataCalculation // the DataCalculation Class, is how any functions needed for Calculations needed to run the program 
     {
-        // A little function too check the length of an string. then return a bool 
+        // A little function to check the length of an string. then return a bool 
         public static bool CheckLength(string input, int length)
         {
-            bool IsOver = false;
-
-            if ((input.Length) == length)
-            {
-                IsOver = true;
-            }
-
-            return IsOver;
+            return input.Length == length;
         }
+
 
         public static bool CheckCount<T>(IList<T> input)
         {
@@ -259,119 +427,26 @@ namespace TestUserInterface
             return IsOver;
         }
 
-        //A little function too sort a list in ascending order
-        public static void HighestBid(List<Bid> BidList)
-        {
-            BidList.Sort((x, y) => y.BidPrice.CompareTo(x.BidPrice));
-
-        }
 
         /// This Function Genrates a new LIST of all the houses in the registry based on a postcode
-        public static List<ListDisplay> GenerateDisplayList(string PostCode, List<User> UserList)
+        public static List<PropertyViewModel> GenerateDisplayList(string PostCode, List<User> UserList)
         {
-            List<ListDisplay> NewDisplayList = new List<ListDisplay>(); //the new list of houses 
+            List<PropertyViewModel> NewDisplayList = new List<PropertyViewModel>(); //the new list of houses 
 
             for (int i = 0; i < UserList.Count; i++) // for loop runs through all registered users   
             {
-                for (int ii = 0; ii < UserList[i].Properties.Count; ii++) // for loop runs through all Properties  
+                for (int ii = 0; ii < UserList[i].Properties.Count; ii++) // for loop runs through all Properties
                 {
-                    if (UserList[i].Properties[ii].Postcode == PostCode) // check if the current propertie has the wanted postcode 
+                    if (UserList[i].Properties[ii].Postcode == PostCode) // check if the current property has the wanted postcode
                     {
-                        //if true, then add the needed info too a new object called SaveList, and add that too the NewDisplayList
-                        NewDisplayList.Add(new ListDisplay { UserNum = i, HouseNum = ii, Houseinfo = UserList[i].Properties[ii].ToString()});
+                        //if true, then add the needed info to a new object called SaveList, and add that to the NewDisplayList
+                        NewDisplayList.Add(new PropertyViewModel { Owner = UserList[i].Properties[ii].Owner, HouseNum = ii, Houseinfo = UserList[i].Properties[ii].ToString() });
                     }
                 }
             }
             return NewDisplayList;
         }
 
-    }
-
-    // the bidding class, is for Calculations based around bidding 
-    public class Bidding : DataCalculation
-    {
-        public static void BidProperty(int ChoosenProperties, List<ListDisplay> DisplayList, List<User> userList)
-        {
-            int UserNum = DisplayList[ChoosenProperties].UserNum;
-            int HouseNum = DisplayList[ChoosenProperties].HouseNum;
-
-            int BidNum = Get.PropertyBid(userList[UserNum].Properties[HouseNum].Bids);
-
-            if(BidNum >= 0)
-            {
-                userList[UserNum].Properties[HouseNum].Bids.Add(new Bid { UserNum = UserNum, BidPrice = BidNum });
-                UserInterface.Message($"System -  Bid of $" + BidNum + " for " + userList[UserNum].Properties[HouseNum].ToString() + " Successfully Placed");
-            }
-              
-        }
-    }
-
-
-    // the Get class, is for anything where we need to Get data 
-    public class Get : DataCalculation
-    {
-        public static string PropertyAddress(List<User> User) // get PropertyAddress
-        {
-            string Property_Address = UserInterface.GetInput("Address");
-
-            int Checkhouse = -1;
-
-            for (int i = 0; i < User.Count; i++) // for loop runs through all registered users   
-            {
-                Checkhouse = User[i].Properties.FindIndex(ent => ent.Address == Property_Address);
-            }
-            
-            if (Checkhouse != -1)
-            {
-                UserInterface.Error("Property is already Registered");
-                return null;
-            }
-            return Property_Address;
-        }
-
-        public static string PropertyPostcode() // get Postcode
-        {
-            string Property_Postcode = UserInterface.GetInput("Postcode");
-
-            bool PostcodeLegth = CheckLength(Property_Postcode, 4);
-
-            if (PostcodeLegth == false)
-            {
-                UserInterface.Error("PostCode is not 4 characters long");
-                return null;
-            }
-
-            return Property_Postcode;
-        }
-
-        public static int PropertyBid(List<Bid> Bidlist) // Get Bids
-        {
-            DataCalculation.HighestBid(Bidlist);
-
-            string textprint;
-            int vaule = 0;
-
-            if (Bidlist.Count == 0)
-            {
-                textprint = "System - There are no bids on this Property, What do you place?";
-                vaule = 0;
-            }
-            else
-            {
-                textprint = "System - Cuurent Bid is $" + Bidlist[0].BidPrice + ", What do you place?";
-                vaule = Bidlist[0].BidPrice;
-            }
-
-            int Property_Bid = UserInterface.GetInteger(textprint);
-
-            if (Property_Bid <= vaule)
-            {
-                UserInterface.Error("Bid too low");
-                return -1;
-            }
-
-            return Property_Bid;
-        }
     }
 
     public class Greetings //IconsNfun is a class that holes just fun little bits for the interface
@@ -392,7 +467,4 @@ namespace TestUserInterface
             UserInterface.Message("------------------------------------------------");
         }
     }
-
 }
-
-
