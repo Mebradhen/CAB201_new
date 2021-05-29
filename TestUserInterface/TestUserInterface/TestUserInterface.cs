@@ -232,7 +232,6 @@ namespace TestUserInterface
 
         public void SellHouse()
         {
-
             var Bidinfo = SellHouseinfo();
             UserInterface.Message(Bidinfo);
         }
@@ -245,7 +244,8 @@ namespace TestUserInterface
 
             if (CurrentUser.Properties[HouseNum].Owner == CurrentUser)
             {
-                return "Can't Sell House Too Self";
+                UserInterface.Error("Can't Sell House Too Self");
+                return null;
             }
 
             //Here we call HighestBid, HighestBid will order the Bidlist in ascending order
@@ -255,7 +255,8 @@ namespace TestUserInterface
 
             if (countcheck == false)
             {
-                return "Currently no Bids";
+                UserInterface.Error("Currently no Bids");
+                return null;
             }
 
             //we grab the first entry in the Bid Database, now that it's in order, This will be the biggest BID.
@@ -274,7 +275,9 @@ namespace TestUserInterface
             // once we have all the details in localdata, we then remove the house from the sellers databse
             CurrentUser.Properties.RemoveAt(0);
 
-            return "Tax payable $" + TAX.ToString() + "";
+            UserInterface.Message("Tax payable $" + TAX.ToString() + "");
+
+            return "Transaction Successfull";
         }
 
         /// <summary> ******************************************************************************************************************
@@ -311,7 +314,7 @@ namespace TestUserInterface
 
                 if (CurrentUser.Properties[num].Owner == CurrentUser)
                 {
-                    UserInterface.Message("Can't Sell House Too Self");
+                    UserInterface.Error("Can't place bid on own Property");
                 }
                 else
                 {
