@@ -68,7 +68,7 @@ namespace TestUserInterface
         ///            NewLandRegister and NewHouseRegister is where we add a house or Land too the house database 
         /// </summary> ******************************************************************************************************************
 
-        public void RegisterLand()
+        private void RegisterLand()
         {
             var Land = RealEstateUserInterface.GetNewLandInfo(CurrentUser , Users);
             if (Land != null)
@@ -77,7 +77,7 @@ namespace TestUserInterface
             }
         }
 
-    
+
 
         /// <summary> ******************************************************************************************************************
         ///                 OPTION 2        Register new House                Register new House 
@@ -85,7 +85,7 @@ namespace TestUserInterface
         ///            NewLandRegister and NewHouseRegister is where we add a house or Land too the house database 
         /// </summary> ******************************************************************************************************************
 
-        public void RegisterHouse()
+        private void RegisterHouse()
         {
             var House = RealEstateUserInterface.GetNewHouseInfo(CurrentUser, Users);
             if (House != null)
@@ -113,7 +113,7 @@ namespace TestUserInterface
         ///                                 ListBids is where we list bids on a Property
         /// </summary> ******************************************************************************************************************
 
-        public void ListBids()
+        private void ListBids()
         {
             if (CurrentUser.Properties == null || CurrentUser.Properties.Count() == 0)
             {
@@ -138,8 +138,13 @@ namespace TestUserInterface
 
         private void SellHouse()
         {
+            if (CurrentUser.Properties == null || CurrentUser.Properties.Count() == 0)
+            {
+                UserInterface.Error("You have no properties, therefore no bids have been received.");
+                return;
+            }
 
-            PropertySelling.SellHouseinfo(CurrentUser);
+            RealEstateUserInterface.SellHouseinfo(CurrentUser);
         }
 
         /// <summary> ******************************************************************************************************************
@@ -148,7 +153,7 @@ namespace TestUserInterface
         ///                                  Below ListForSale will list the houses at a postcode
         /// </summary> ******************************************************************************************************************
 
-        public void ListForSale()
+        private void ListForSale()
         {
             var Land = RealEstateUserInterface.GetPostcode(); /// PropertyPostcode gets a postcode
             if (Land != null)
@@ -165,7 +170,7 @@ namespace TestUserInterface
         ///                                      Will allow us too bid on a place
         /// </summary> ******************************************************************************************************************
 
-        public void BidOnProperty()
+        private void BidOnProperty()
         {
             var chosenPostcode = RealEstateUserInterface.GetPostcode();
 
@@ -191,7 +196,7 @@ namespace TestUserInterface
             else
             {
                 var chosenProperty = chosenPropertyViewModel.Owner.Properties[chosenPropertyViewModel.HouseNum];
-                chosenProperty.PlaceBid();// PlaceBid allows us to place a bid
+                chosenProperty.PlaceBid(CurrentUser);// PlaceBid allows us to place a bid
             }
 
         }
@@ -203,7 +208,7 @@ namespace TestUserInterface
         ///                                                   Logout user
         /// </summary> ******************************************************************************************************************
 
-        public void LogoutCustomer()
+        private void LogoutCustomer()
         {
             // send message saying user is logged out 
             UserInterface.Message($"System -  " + CurrentUser.Name + " Successfully logged out");
@@ -216,7 +221,7 @@ namespace TestUserInterface
         /// </summary> ******************************************************************************************************************
 
         //Here we add our menus too the menu and submenu objects
-        public void Run()
+        private void Run()
         {
 
             // add main menu
@@ -224,8 +229,8 @@ namespace TestUserInterface
             Menu.Add("Login as existing Customer", Login);
 
             //add Submenu
-            SubMenu.Add("Register new land for sale", RegisterHouse);
-            SubMenu.Add("Register a new house for sale", RegisterLand);
+            SubMenu.Add("Register new land for sale", RegisterLand);
+            SubMenu.Add("Register a new house for sale", RegisterHouse);
             SubMenu.Add("List my properties ", ListProperties);
             SubMenu.Add("List bids received for a property", ListBids);
             SubMenu.Add("Sell one of my properties to highest bidder", SellHouse);
@@ -237,7 +242,7 @@ namespace TestUserInterface
         }
 
         // Here we control what menu is auto displayed based on the CurrentloggedInUser.  
-        public void DisplayMainMenu()
+        private void DisplayMainMenu()
         {
             Greetings.FrontGreeting();
 

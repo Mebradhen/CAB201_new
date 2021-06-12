@@ -16,11 +16,11 @@ namespace TestUserInterface
     // NewBidRegister is yet another class, where other scripts can call it to make an object that stores a Properties bids
     public class Bid
     {
-        public User Owner { get; set; }
+        public User Bidder { get; set; }
         public int BidPrice { get; set; }
         public override string ToString()
         {
-            return "$" + BidPrice.ToString();
+            return "$" + BidPrice.ToString() +" From " + Bidder.Name + " ( " + Bidder.Email + " ) ";
         }
     }
 

@@ -126,36 +126,7 @@ namespace TestUserInterface
             Console.ResetColor();
         }
 
-        // GetNewUserInfo Get New info for Users
-        public static User GetNewUserInfo(Users users)
-        {
-            var CustomerName = UserInterface.GetInput("Full name");
-            var CustomerEmail = UserInterface.GetInput("Email");
-
-            // Here we are checking if the Email has a legit @ in it. 
-            bool AtCheck = DataCalculation.CheckFor(CustomerEmail, "@");
-
-            if (!AtCheck)
-            {
-                UserInterface.Error("Email is missing an @");
-                return null;
-            }
-
-            var Customerpassword = UserInterface.GetPassword("Password");
-
-            // here we check if there is any other users with the same email 
-            var userEmailExists = users.Exists(CustomerEmail);
-
-            if (userEmailExists)
-            {
-                UserInterface.Error("User is already registered");
-                return null;
-            }
-
-            UserInterface.Message("System - " + CustomerName + " registered successfully");
-
-            return new User() { Name = CustomerName, Email = CustomerEmail, Password = Customerpassword };
-        }
+   
     }
 
 

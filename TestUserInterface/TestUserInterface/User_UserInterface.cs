@@ -37,7 +37,7 @@ namespace TestUserInterface
 
         internal void RegisterUser()
         {
-            var user = UserInterface.GetNewUserInfo(this);
+            var user = RealEstateUserInterface.GetNewUserInfo(this);
             if (user != null)
             {
                 UserList.Add(user);

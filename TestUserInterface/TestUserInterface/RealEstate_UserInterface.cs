@@ -32,12 +32,43 @@ namespace TestUserInterface
             return Property_Postcode;
         }
 
+        // GetNewUserInfo Get New info for Users
+        public static User GetNewUserInfo(Users users)
+        {
+            var CustomerName = UserInterface.GetInput("Full name");
+            var CustomerEmail = UserInterface.GetInput("Email");
+
+            // Here we are checking if the Email has a legit @ in it. 
+            bool AtCheck = DataCalculation.CheckFor(CustomerEmail, "@");
+
+            if (!AtCheck)
+            {
+                UserInterface.Error("Email is missing an @");
+                return null;
+            }
+
+            var Customerpassword = UserInterface.GetPassword("Password");
+
+            // here we check if there is any other users with the same email 
+            var userEmailExists = users.Exists(CustomerEmail);
+
+            if (userEmailExists)
+            {
+                UserInterface.Error("User is already registered");
+                return null;
+            }
+
+            UserInterface.Message("System - " + CustomerName + " registered successfully");
+
+            return new User() { Name = CustomerName, Email = CustomerEmail, Password = Customerpassword };
+        }
+
         // get a Bid and validate the number has a Correct input
-        public static int GetPropertyBid(Bids bids) // Get Bids
+        public static double GetPropertyBid(Bids bids) // Get Bids
         {
             string textprint;
 
-            int highestBidPrice = bids.GetHighestBidPrice();
+            double highestBidPrice = bids.GetHighestBidPrice();
 
             if (bids.Count == 0)
             {
@@ -48,7 +79,7 @@ namespace TestUserInterface
                 textprint = "System - Current Highest Bid is $" + highestBidPrice + ", What do you place?";
             }
 
-            int Property_Bid = UserInterface.GetInteger(textprint);
+            double Property_Bid = UserInterface.GetInteger(textprint);
 
             if (Property_Bid <= highestBidPrice)
             {
@@ -104,7 +135,7 @@ namespace TestUserInterface
             int Property_Area = UserInterface.GetInteger("Area");
 
             // print it all out
-            UserInterface.Message("System - Land at " + PropertyAddress + ", " + PropertyPostcode + " " + Property_Area + "m² Registered successfully");
+            UserInterface.Message("System - Land at " + PropertyAddress + ", " + PropertyPostcode + ", Area: " + Property_Area + "m² Registered successfully");
             return new Land() { Address = PropertyAddress, Postcode = PropertyPostcode, AreaInSquareMetres = Property_Area, Owner = user};
         }
 
@@ -131,9 +162,44 @@ namespace TestUserInterface
 
             string House_desc = UserInterface.GetInput("Enter description of house (list of rooms etc)");
 
-            UserInterface.Message("system - House at " + PropertyAddress + ", " + PropertyPostcode + " " + House_desc + " Registered successfully");
+            UserInterface.Message("system - House at " + PropertyAddress + ", " + PropertyPostcode + ", Info: " + House_desc + " Registered successfully");
             return new House() { Address = PropertyAddress, Postcode = PropertyPostcode, Info = House_desc, Owner = user};
         }
 
+        public static void SellHouseinfo(User user)
+        {
+
+            //call ChooseFromList, where we list all houses the user owns.
+            int HouseNum = UserInterface.ChooseFromList(user.Properties);
+
+            user.Properties[HouseNum].Bids.SortBids();
+
+            bool countcheck = DataCalculation.CheckCount(user.Properties[HouseNum].Bids.BidList);
+
+            if (countcheck == false)
+            {
+                UserInterface.Error("Currently no Bids");
+                return;
+            }
+
+            //we grab the first entry in the Bid Database, now that it's in order, This will be the biggest BID.
+            var highestBid = user.Properties[HouseNum].Bids.GetHighestBid();
+            var purchaser = highestBid.Bidder;
+            double soldPrice = highestBid.BidPrice;
+
+            // we send the final sold price off to the database (this is for future expandability) 
+            user.Properties[HouseNum].SalePrice = soldPrice;
+
+            // call CalculateSalesTax too work out the tax that is payable 
+            double TAX = Math.Round(user.Properties[HouseNum].CalculateSalesTax());
+
+            // print all the details out
+            UserInterface.Message($"System - " + user.Properties[HouseNum].ToString() + " SOLD too " + purchaser.Name + " (" + purchaser.Email + ") FOR $" + soldPrice + "");
+
+            // once we have all the details in localdata, we then remove the house from the sellers databse
+            user.Properties.RemoveAt(HouseNum);
+
+            UserInterface.Message("Tax payable $" + TAX.ToString() + "");
+        }
     }
 }

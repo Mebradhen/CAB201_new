@@ -38,9 +38,9 @@ namespace TestUserInterface
         public Bids Bids = new Bids();
         public abstract double CalculateSalesTax();
         // place bid
-        public void PlaceBid()
+        public void PlaceBid(User user)
         {
-            User owner = Owner;
+            User Bidder = user;
 
             double BidNum = RealEstateUserInterface.GetPropertyBid(Bids);
 
@@ -48,7 +48,7 @@ namespace TestUserInterface
 
             if (BidNum >= 0)
             {
-                Bids.Add(new Bid { Owner = owner, BidPrice = (int)BidNum });
+                Bids.Add(new Bid { Bidder = Bidder, BidPrice = (int)BidNum });
                 UserInterface.Message($"System -  Bid of $" + (int)BidNum + " for " + this.ToString() + " Successfully Placed");
             }
         }
@@ -90,42 +90,6 @@ namespace TestUserInterface
     }
 
 
-    public class PropertySelling // Finally this algorithm selles the house!  
-    {       
-        public static void SellHouseinfo(User user)
-        {
-            //call ChooseFromList, where we list all houses the user owns.
-            int HouseNum = UserInterface.ChooseFromList(user.Properties);
-
-            user.Properties[HouseNum].Bids.SortBids();
-
-            bool countcheck = DataCalculation.CheckCount(user.Properties[HouseNum].Bids.BidList);
-
-            if (countcheck == false)
-            {
-                UserInterface.Error("Currently no Bids");
-                return;
-            }
-
-            //we grab the first entry in the Bid Database, now that it's in order, This will be the biggest BID.
-            var highestBid = user.Properties[HouseNum].Bids.GetHighestBid();
-            var purchaser = highestBid.Owner;
-            int soldPrice = highestBid.BidPrice;
-
-            // we send the final sold price off to the database (this is for future expandability) 
-            user.Properties[HouseNum].SalePrice = soldPrice;
-
-            // call CalculateSalesTax too work out the tax that is payable 
-            double TAX = user.Properties[HouseNum].CalculateSalesTax();
-
-            // print all the details out
-            UserInterface.Message($"System - " + user.Properties[HouseNum].ToString() + " SOLD too " + purchaser.Name + " (" + user.Email + ") FOR $" + soldPrice + "");
-
-            // once we have all the details in localdata, we then remove the house from the sellers databse
-            user.Properties.RemoveAt(0);
-
-            UserInterface.Message("Tax payable $" + TAX.ToString() + "");
-        }
-    }
+ 
 
 }
